@@ -1,0 +1,54 @@
+{{- if .Values.api.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}-{{ .Values.appEnv }}-api
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}-{{ .Values.appEnv }}-api
+spec:
+  replicas: {{ .Values.api.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}-{{ .Values.appEnv }}-api
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}-{{ .Values.appEnv }}-api
+        version: {{ .Values.image.tag | quote }}
+    spec:
+      containers:
+        - name: {{ .Values.appName }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: APP_VERSION
+              value: {{ .Values.image.tag | quote }}
+            - name: APP_ENV
+              value: {{ .Values.env.APP_ENV | quote }}
+          resources:
+            requests:
+              memory: {{ .Values.api.resources.requests.memory | quote }}
+              cpu: {{ .Values.api.resources.requests.cpu | quote }}
+            limits:
+              memory: {{ .Values.api.resources.limits.memory | quote }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+{{- end }}

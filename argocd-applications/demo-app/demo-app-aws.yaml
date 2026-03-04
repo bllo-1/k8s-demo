@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo-app-aws
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/bllo-1/k8s-demo.git'
+    path: demo-app
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - aws-values.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: demo-aws
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

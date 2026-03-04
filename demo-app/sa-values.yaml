@@ -1,0 +1,27 @@
+namespace: demo-sa
+appName: demo-app
+appEnv: sa
+image:
+  repository: demo-app
+  tag: "v1.0.0"
+api:
+  enabled: true
+  replicas: 1
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    cpu:
+      average: 80
+  pdb:
+    enabled: true
+    minAvailable: 1
+  resources:
+    requests:
+      memory: "32Mi"
+      cpu: "25m"
+    limits:
+      memory: "64Mi"
+env:
+  APP_ENV: "gcp-sa-production"
+  APP_NAME: "demo-app"

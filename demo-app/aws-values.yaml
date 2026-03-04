@@ -1,0 +1,27 @@
+namespace: demo-aws
+appName: demo-app
+appEnv: aws
+image:
+  repository: demo-app
+  tag: "v1.0.0"
+api:
+  enabled: true
+  replicas: 3
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    cpu:
+      average: 50
+  pdb:
+    enabled: true
+    minAvailable: 1
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+env:
+  APP_ENV: "aws-production"
+  APP_NAME: "demo-app"
